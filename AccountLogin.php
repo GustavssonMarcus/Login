@@ -1,6 +1,6 @@
 <?php
 require_once ('lib/PageTemplate.php');
-# trick to execute 1st time, but not 2nd so you don't have an inf loop
+
 if (!isset($TPL)) {
     $TPL = new PageTemplate();
     $TPL->PageTitle = "Login";
@@ -8,10 +8,11 @@ if (!isset($TPL)) {
     include "layout.php";
     exit;
 }
+
+
 ?>
 <p>
 <div class="row">
-
     <div class="row">
         <div class="col-md-12">
             <div class="newsletter">
@@ -29,9 +30,5 @@ if (!isset($TPL)) {
             </div>
         </div>
     </div>
-
-
 </div>
-
-
 </p>

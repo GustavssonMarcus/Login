@@ -44,6 +44,17 @@ class UserDatabase
           UNIQUE KEY `email` (`email`)
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         
+        CREATE TABLE IF NOT EXISTS `userdetails` (
+          `Id` int NOT NULL AUTO_INCREMENT,
+          `email` varchar(50) NOT NULL,
+          `password` varchar(50) NOT NULL,
+          `name` varchar(50) NOT NULL,
+          `street` varchar(10) NOT NULL,
+          `postal` varchar(30) NOT NULL,
+          `city` varchar(50) NOT NULL,
+          PRIMARY KEY (`Id`),
+        ) ;
+
         CREATE TABLE IF NOT EXISTS `users_confirmations` (
           `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
           `user_id` int(10) unsigned NOT NULL,
@@ -98,7 +109,7 @@ class UserDatabase
 
     function seedUsers()
     {
-        if ($this->pdo->query("select * from users where email='stefan.holmberg@systementor.se'")->rowCount() == 0) {
+        if ($this->pdo->query("select * from userdetails where email='stefan.holmberg@systementor.se'")->rowCount() == 0) {
             $userId = $this->auth->admin()->createUser("stefan.holmberg@systementor.se", "Hejsan123#", "stefan.holmberg@systementor.se");
         }
     }

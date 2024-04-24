@@ -1,17 +1,12 @@
 <?php
+ob_start();
 require_once ('lib/PageTemplate.php');
-require_once ("Validator.php");
-require_once 'database.php';
+require_once ('Database.php');
 
-
-
-$message = "";
-$username = "";
 $registeredOk = false;
-$errors = array();
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
     $email = $_POST['email'];
     $password = $_POST['password'];
     $repeatPassword = $_POST['repeat_password'];
@@ -20,12 +15,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $postal = $_POST['postal'];
     $city = $_POST['city'];
 
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
 
-
-
-
-
+    $errors = array();
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Ogiltig e-postadress";
     }
@@ -66,14 +58,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Staden får inte vara tomt";
     }
 
+    if($sql = "SELECT * FROM userdetails WHERE email ='$email'") {
+        $errors[] = "Mailadress finns redan!";
+    }
+
     if (empty($errors)) {
         $registeredOk = true;
     }
-
 }
-
 ?>
-
 <?php if (!isset($TPL)): ?>
     <?php
     $TPL = new PageTemplate();
@@ -84,8 +77,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 <?php endif; ?>
 
-<?php if ($registeredOk): ?>
-    <div>Tack för din registrering! Kontrollera din e-post för att slutföra processen.</div>
+<?php if ($registeredOk): 
+    $sql = "INSERT INTO userdetails(email, password, name, street, postal, city) VALUES(:email, :password, :name, :street, :postal, :city)";
+    try {
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':street', $street);
+        $stmt->bindParam(':postal', $postal);
+        $stmt->bindParam(':city', $city);
+
+        $stmt->execute();
+        header("Location: AccountLogin.php");
+        exit;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+    
+    ?>    
 <?php else: ?>
     <?php if (!empty($errors)): ?>
         <ul>
@@ -99,7 +109,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="col-md-12">
             <div class="newsletter">
                 <p>User<strong>&nbsp;REGISTER</strong></p>
-                <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <form method="post" action="AccountRegister.php">
                     <input class="input" type="email" name="email" placeholder="Enter Your Email" required>
                     <br /><br />
                     <input class="input" type="password" name="password" placeholder="Enter Your Password" required>
