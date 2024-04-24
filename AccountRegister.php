@@ -58,8 +58,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Staden får inte vara tomt";
     }
 
-    if($sql = "SELECT * FROM userdetails WHERE email ='$email'") {
-        $errors[] = "Mailadress finns redan!";
+    $stmt = $conn->prepare("SELECT * FROM userdetails WHERE email = :email");
+    $stmt->execute(['email' => $email]);
+    $count = $stmt->fetchColumn();
+
+    if ($count > 0) {
+        $errors[] = "E-postadressen finns redan registrerad.";
     }
 
     if (empty($errors)) {
@@ -82,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':password', $hashedpassword);
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':street', $street);
         $stmt->bindParam(':postal', $postal);
@@ -124,7 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <br /><br />
                     <input class="input" type="text" name="city" placeholder="City" required>
                     <br /><br />
-                    <button type="submit" class="newsletter-btn"><i class="fa fa-envelope"></i> Register</button>
+                    <button class="newsletter-btn"><i class="fa fa-envelope"></i> Register</button>
                 </form>
             </div>
         </div>
