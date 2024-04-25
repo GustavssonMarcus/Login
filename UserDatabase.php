@@ -49,11 +49,13 @@ class UserDatabase
           `email` varchar(50) NOT NULL,
           `password` varchar(50) NOT NULL,
           `name` varchar(50) NOT NULL,
-          `street` varchar(10) NOT NULL,
+          `street` varchar(100) NOT NULL,
           `postal` varchar(30) NOT NULL,
           `city` varchar(50) NOT NULL,
-          PRIMARY KEY (`Id`),
-        ) ;
+          `reset_token` varchar(100),
+          `reset_token_expires` datetime,
+          PRIMARY KEY (`Id`)
+        );
 
         CREATE TABLE IF NOT EXISTS `users_confirmations` (
           `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
